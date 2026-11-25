@@ -1,10 +1,8 @@
 const DEFAULT_AI_BASE_URL = 'https://api.groq.com/openai/v1/chat/completions';
-const DEFAULT_AI_MODEL = 'openai/gpt-oss-120b';
+const DEFAULT_AI_MODEL = 'llama-3.3-70b-versatile';
 const GROQ_FALLBACK_MODELS = [
-  'openai/gpt-oss-120b',
-  'openai/gpt-oss-20b',
+  'llama-3.3-70b-versatile',
   'llama-3.1-8b-instant',
-  'qwen/qwen3-32b',
 ];
 const REQUEST_TIMEOUT_MS = 25000;
 const MANUAL_FALLBACK_HINT =

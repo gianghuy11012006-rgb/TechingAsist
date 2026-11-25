@@ -529,6 +529,7 @@ select {
   border: 1px solid rgba(148, 163, 184, 0.18);
   aspect-ratio: 1 / 1;
   user-select: none;
+  touch-action: none;
 }
 
 .grid-cell {
@@ -641,6 +642,7 @@ select {
   grid-template-columns: repeat(3, 1fr);
   gap: 8px;
   min-height: 88px;
+  touch-action: none;
 }
 
 .tray-piece-btn {
@@ -708,8 +710,6 @@ select {
 }
 
 .drag-cell {
-  width: 26px;
-  height: 26px;
   border-radius: 6px;
 }
 

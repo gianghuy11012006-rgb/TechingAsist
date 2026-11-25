@@ -451,23 +451,25 @@ export default function BlockBlastGame({
     ]
   );
 
+  const GRID_PAD = 8;
+  const GRID_GAP = 5;
+  const TOUCH_LIFT = 60;
+
   const getCellFromPointer = useCallback((clientX, clientY, pointerType) => {
     const gridEl = gridRef.current;
     if (!gridEl) return null;
     const rect = gridEl.getBoundingClientRect();
-    const offsetY = pointerType === 'touch' ? -44 : 0;
-    const x = clientX - rect.left;
-    const y = clientY + offsetY - rect.top;
+    const cellSize = (rect.width - 2 * GRID_PAD - (GRID_SIZE - 1) * GRID_GAP) / GRID_SIZE;
+    const step = cellSize + GRID_GAP;
 
-    if (x < 0 || y < 0 || x >= rect.width || y >= rect.height) {
-      return null;
-    }
+    const adjustedY = pointerType === 'touch' ? clientY - TOUCH_LIFT : clientY;
+    const x = clientX - rect.left - GRID_PAD;
+    const y = adjustedY - rect.top - GRID_PAD;
 
-    const col = Math.floor((x / rect.width) * GRID_SIZE);
-    const row = Math.floor((y / rect.height) * GRID_SIZE);
-    if (row < 0 || row >= GRID_SIZE || col < 0 || col >= GRID_SIZE) {
-      return null;
-    }
+    const col = Math.floor(x / step);
+    const row = Math.floor(y / step);
+
+    if (col < 0 || col >= GRID_SIZE || row < 0 || row >= GRID_SIZE) return null;
     return { row, col };
   }, []);
 
@@ -992,33 +994,42 @@ export default function BlockBlastGame({
         )}
       </div>
 
-      {dragState?.piece && (
-        <div
-          className="drag-floating-piece"
-          style={{
-            left: dragState.clientX,
-            top: dragState.clientY + (dragState.pointerType === 'touch' ? -44 : 0),
-          }}
-        >
+      {dragState?.piece && (() => {
+        const rect = gridRef.current?.getBoundingClientRect();
+        const GRID_PAD = 8;
+        const GRID_GAP = 5;
+        const TOUCH_LIFT = 60;
+        const cellSize = rect
+          ? (rect.width - 2 * GRID_PAD - (GRID_SIZE - 1) * GRID_GAP) / GRID_SIZE
+          : 40;
+        const floatTop = dragState.pointerType === 'touch'
+          ? dragState.clientY - TOUCH_LIFT
+          : dragState.clientY;
+        return (
           <div
-            className="piece-mini-grid drag-grid-large"
-            style={{
-              gridTemplateColumns: `repeat(${dragState.piece.shape[0].length}, 26px)`,
-            }}
+            className="drag-floating-piece"
+            style={{ left: dragState.clientX, top: floatTop }}
           >
-            {dragState.piece.shape.flatMap((row, r) =>
-              row.map((val, c) => (
-                <span
-                  key={`${r}-${c}`}
-                  className={
-                    val ? `drag-cell filled color-${dragState.piece.color}` : 'drag-cell'
-                  }
-                />
-              ))
-            )}
+            <div
+              className="piece-mini-grid"
+              style={{
+                gridTemplateColumns: `repeat(${dragState.piece.shape[0].length}, ${cellSize}px)`,
+                gap: `${GRID_GAP}px`,
+              }}
+            >
+              {dragState.piece.shape.flatMap((row, r) =>
+                row.map((val, c) => (
+                  <span
+                    key={`${r}-${c}`}
+                    className={val ? `drag-cell filled color-${dragState.piece.color}` : 'drag-cell'}
+                    style={{ width: cellSize, height: cellSize }}
+                  />
+                ))
+              )}
+            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
     </div>
   );
 }
