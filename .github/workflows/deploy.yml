@@ -34,13 +34,11 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
+      - name: Create .env from single secret
+        run: |
+          printf '%s\n' "${{ secrets.APP_ENV_CONFIG }}" > .env
+
       - name: Build
-        env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
-          VITE_AI_API_KEY: ${{ secrets.VITE_AI_API_KEY }}
-          VITE_AI_BASE_URL: ${{ secrets.VITE_AI_BASE_URL }}
-          VITE_AI_MODEL: ${{ secrets.VITE_AI_MODEL }}
         run: npm run build
 
       - name: Upload artifact
